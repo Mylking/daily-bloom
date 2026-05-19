@@ -1,9 +1,16 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { AppData, Habit, ThemeName } from "@/lib/habit-types";
-import { applyTheme, initialData, loadData, newHabit, saveData, saveDataNow } from "@/lib/habit-storage";
+import { applyTheme, loadData, newHabit, saveData, saveDataNow } from "@/lib/habit-storage";
 import { checkAchievements, monthKey } from "@/lib/habit-calc";
 import { ACHIEVEMENT_META } from "@/lib/habit-types";
 import { toast } from "sonner";
+
+const INITIAL_DATA: AppData = {
+  habits: [],
+  achievements: [],
+  settings: { theme: "obsidian", globalTimeTracking: false, lastVisited: "" },
+  version: "1.0.0",
+};
 
 interface Ctx {
   data: AppData;
@@ -20,7 +27,7 @@ interface Ctx {
 const HabitsCtx = createContext<Ctx | null>(null);
 
 export function HabitsProvider({ children }: { children: React.ReactNode }) {
-  const [data, setData] = useState<AppData>(() => initialData());
+  const [data, setData] = useState<AppData>(INITIAL_DATA);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
