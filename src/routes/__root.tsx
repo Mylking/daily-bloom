@@ -1,67 +1,37 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
-  Link,
   createRootRouteWithContext,
   useRouter,
   HeadContent,
   Scripts,
+  Link,
 } from "@tanstack/react-router";
-
 import appCss from "../styles.css?url";
+import { Sidebar, MobileNav } from "@/components/habit/sidebar";
+import { HabitsProvider } from "@/hooks/use-habits";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
-        </div>
+        <h1 className="text-7xl font-bold">404</h1>
+        <p className="mt-2 text-sm text-[var(--text-secondary)]">Page not found</p>
+        <Link to="/" className="inline-block mt-4 px-4 py-2 rounded-md text-white" style={{ background: "var(--gradient-primary)" }}>Go home</Link>
       </div>
     </div>
   );
 }
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
   const router = useRouter();
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Try again
-          </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Go home
-          </a>
-        </div>
+        <h1 className="text-xl font-semibold">Something went wrong</h1>
+        <p className="mt-2 text-sm text-[var(--text-secondary)]">{error.message}</p>
+        <button onClick={() => { router.invalidate(); reset(); }} className="mt-4 px-4 py-2 rounded-md text-white" style={{ background: "var(--gradient-primary)" }}>Try again</button>
       </div>
     </div>
   );
@@ -72,21 +42,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { title: "Habitus — Professional habit tracker" },
+      { name: "description", content: "Track daily habits, streaks, and analytics in a sleek dark interface." },
     ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -96,10 +55,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
+    <html lang="en" data-theme="obsidian">
+      <head><HeadContent /></head>
       <body>
         {children}
         <Scripts />
@@ -110,10 +67,18 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <HabitsProvider>
+        <div className="flex min-h-screen w-full bg-[var(--bg-base)]">
+          <Sidebar />
+          <main className="flex-1 min-w-0 px-4 md:px-8 py-6 pb-24 md:pb-8">
+            <Outlet />
+          </main>
+          <MobileNav />
+          <Toaster theme="dark" position="top-right" />
+        </div>
+      </HabitsProvider>
     </QueryClientProvider>
   );
 }
