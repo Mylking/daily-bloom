@@ -77,20 +77,45 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+const PUBLIC_PATHS = new Set(["/auth", "/reset-password"]);
+
+function AuthGate({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isPublic = PUBLIC_PATHS.has(pathname);
+
+  useEffect(() => {
+    if (loading) return;
+    if (!user && !isPublic) navigate({ to: "/auth" });
+  }, [user, loading, isPublic, navigate]);
+
+  if (loading) {
+    return <div className="flex min-h-screen items-center justify-center text-sm text-[var(--text-secondary)]">Loading…</div>;
+  }
+  if (isPublic) return <>{children}</>;
+  if (!user) return null;
+  return (
+    <HabitsProvider>
+      <div className="flex min-h-screen w-full bg-[var(--bg-base)]">
+        <Sidebar />
+        <main className="flex-1 min-w-0 px-4 md:px-8 py-6 pb-24 md:pb-8">{children}</main>
+        <MobileNav />
+      </div>
+    </HabitsProvider>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <HabitsProvider>
-        <div className="flex min-h-screen w-full bg-[var(--bg-base)]">
-          <Sidebar />
-          <main className="flex-1 min-w-0 px-4 md:px-8 py-6 pb-24 md:pb-8">
-            <Outlet />
-          </main>
-          <MobileNav />
-          <Toaster theme="dark" position="top-right" />
-        </div>
-      </HabitsProvider>
+      <AuthProvider>
+        <AuthGate>
+          <Outlet />
+        </AuthGate>
+        <Toaster theme="dark" position="top-right" />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
