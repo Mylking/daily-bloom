@@ -3,13 +3,17 @@ import {
   Outlet,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
   Link,
+  useNavigate,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
 import appCss from "../styles.css?url";
 import { Sidebar, MobileNav } from "@/components/habit/sidebar";
 import { HabitsProvider } from "@/hooks/use-habits";
+import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
