@@ -107,7 +107,7 @@ export function HabitGrid() {
             className="grid items-center text-[11px] uppercase tracking-wider text-[var(--text-tertiary)] border-b border-[var(--border-subtle)] pb-2 mb-1"
             style={{ gridTemplateColumns: `200px repeat(${dim}, 38px) 70px 70px 90px` }}
           >
-            <div className="pl-2">Habit</div>
+            <div className="pl-2 sticky left-0 z-20 bg-[var(--bg-elevated)]">Habit</div>
             {Array.from({ length: dim }).map((_, i) => {
               const day = i + 1;
               const isToday = isCurrentMonth && day === todayDay;
