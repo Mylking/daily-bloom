@@ -100,7 +100,7 @@ export function HabitGrid() {
       </div>
 
       {/* Grid */}
-      <div className="habit-grid-container glass rounded-xl p-3 overflow-x-auto">
+      <div className="habit-grid-container glass rounded-xl py-3 pr-3 overflow-x-auto">
         <div className="min-w-[1600px]">
           {/* Header row */}
           <div
