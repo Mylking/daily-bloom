@@ -1,26 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { HabitGrid } from "@/components/habit/habit-grid";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Monthly Grid</h1>
+        <p className="text-sm text-[var(--text-secondary)]">Tap a cell to mark a day complete. Auto-saved locally.</p>
+      </div>
+      <HabitGrid />
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }
