@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { AppData, Habit, ThemeName } from "@/lib/habit-types";
-import { applyTheme, loadData, newHabit, saveData, saveDataNow } from "@/lib/habit-storage";
+import { applyTheme, initialData, loadData, newHabit, saveData, saveDataNow } from "@/lib/habit-storage";
 import { checkAchievements, monthKey } from "@/lib/habit-calc";
 import { ACHIEVEMENT_META } from "@/lib/habit-types";
 import { toast } from "sonner";
