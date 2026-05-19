@@ -105,9 +105,10 @@ export function HabitGrid() {
           {/* Header row */}
           <div
             className="grid items-center text-[11px] uppercase tracking-wider text-[var(--text-tertiary)] border-b border-[var(--border-subtle)] pb-2 mb-1"
-            style={{ gridTemplateColumns: `200px repeat(${dim}, 38px) 70px 70px 90px` }}
+            style={{ gridTemplateColumns: `212px repeat(${dim}, 38px) 70px 70px 90px` }}
           >
-            <div className="sticky left-0 z-20 bg-[var(--bg-elevated)]">Habit</div>
+            <div className="sticky left-0 z-20 bg-[var(--bg-elevated)] pl-3">Habit</div>
+
             {Array.from({ length: dim }).map((_, i) => {
               const day = i + 1;
               const isToday = isCurrentMonth && day === todayDay;
@@ -133,9 +134,10 @@ export function HabitGrid() {
               <div
                 key={h.id}
                 className="group grid items-center py-1.5 border-b border-[var(--border-subtle)] hover:bg-[var(--bg-surface)]/[0.55]"
-                style={{ gridTemplateColumns: `200px repeat(${dim}, 38px) 70px 70px 90px` }}
+                style={{ gridTemplateColumns: `212px repeat(${dim}, 38px) 70px 70px 90px` }}
               >
-                <div className="flex items-center gap-1 pr-2 min-w-0 sticky left-0 z-10 bg-[var(--bg-elevated)] group-hover:bg-[var(--bg-surface)]">
+                <div className="flex items-center gap-1 pl-3 pr-2 min-w-0 sticky left-0 z-10 bg-[var(--bg-elevated)] group-hover:bg-[var(--bg-surface)]">
+
                   <div className="truncate text-sm font-medium" title={h.name}>{h.name}</div>
                   <div className="ml-auto opacity-0 group-hover:opacity-100 transition flex gap-1">
                     <button onClick={() => setEditId(h.id)} className="p-1 rounded hover:bg-[var(--bg-surface-hover)]">
