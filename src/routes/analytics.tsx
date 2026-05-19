@@ -26,14 +26,14 @@ function AnalyticsPage() {
   const mk = monthKey(new Date().getFullYear() === 2026 && new Date().getMonth() === 4 ? new Date(2026, 4, 1) : new Date());
   const stats = monthlyStats(data.habits, mk);
   const totalActive = data.habits.filter((h) => calculateStreak(h).current > 0).length;
-  const best = useMemo(() => {
-    let b: { name: string; pct: number } | null = null;
+  const best = useMemo<{ name: string; pct: number } | null>(() => {
+    let result: { name: string; pct: number } | null = null;
     const dim = daysInMonthKey(mk);
     data.habits.forEach((h) => {
       const pct = Math.round(((h.completions[mk] || []).length / dim) * 100);
-      if (!b || pct > b.pct) b = { name: h.name, pct };
+      if (!result || pct > result.pct) result = { name: h.name, pct };
     });
-    return b;
+    return result;
   }, [data.habits, mk]);
 
   // Heatmap last 90 days
