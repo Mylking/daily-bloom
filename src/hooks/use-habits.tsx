@@ -80,7 +80,7 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     saveTimer.current = setTimeout(async () => {
       const { error } = await supabase
         .from("user_habit_data")
-        .upsert({ user_id: user.id, data: data as unknown as Record<string, unknown> }, { onConflict: "user_id" });
+        .upsert({ user_id: user.id, data: data as never }, { onConflict: "user_id" });
       if (error) {
         console.error(error);
         toast.error("Failed to save");
