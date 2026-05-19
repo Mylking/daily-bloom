@@ -28,6 +28,10 @@ function seed(): AppData {
   };
 }
 
+export function initialData(): AppData {
+  return seed();
+}
+
 export function loadData(): AppData {
   if (typeof window === "undefined") return seed();
   try {
