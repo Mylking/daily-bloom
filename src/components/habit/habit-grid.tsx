@@ -135,7 +135,7 @@ export function HabitGrid() {
                 className="group grid items-center py-1.5 border-b border-[var(--border-subtle)] hover:bg-[var(--bg-surface)]/50"
                 style={{ gridTemplateColumns: `200px repeat(${dim}, 38px) 70px 70px 90px` }}
               >
-                <div className="flex items-center gap-1 pl-2 pr-2 min-w-0">
+                <div className="flex items-center gap-1 pl-2 pr-2 min-w-0 sticky left-0 z-10 bg-[var(--bg-elevated)] group-hover:bg-[var(--bg-surface)]">
                   <div className="truncate text-sm font-medium" title={h.name}>{h.name}</div>
                   <div className="ml-auto opacity-0 group-hover:opacity-100 transition flex gap-1">
                     <button onClick={() => setEditId(h.id)} className="p-1 rounded hover:bg-[var(--bg-surface-hover)]">
