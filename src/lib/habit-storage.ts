@@ -29,7 +29,12 @@ function seed(): AppData {
 }
 
 export function initialData(): AppData {
-  return seed();
+  return {
+    habits: [],
+    achievements: [],
+    settings: { theme: "obsidian", globalTimeTracking: false, lastVisited: "" },
+    version: VERSION,
+  };
 }
 
 export function loadData(): AppData {
