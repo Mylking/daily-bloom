@@ -1,12 +1,34 @@
 import { AppData, Habit, INITIAL_HABITS, ThemeName } from "./habit-types";
 
-const KEY = "habit-tracker-v1";
-const VERSION = "1.0.0";
+const KEY = "habit-tracker-v2";
+const VERSION = "1.1.0";
 
 function uuid() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
   return "id-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
+
+// Seed data for May 2026 — matches user's existing tracker
+const MAY_2026: Record<string, number[]> = {
+  "Wake up before 5:30am": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+  "Run and walk": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+  "Drink 3-4L water": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18],
+  "Claud courses": [6, 9, 12, 14, 17],
+  "Hit gym": [4, 6, 7, 9, 10, 11, 13, 14, 16, 17],
+  "Eat 6 eggs": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 18],
+  "Do calisthenics": [4, 5, 6, 8, 9, 10, 11, 12, 14, 16, 17],
+  "Post a reel on L n L": [5, 7, 10, 13, 16],
+  "Complete intern 7-8": [6, 8, 10, 13, 15, 17],
+  "2 leet code a day": [5, 7, 8, 10, 11, 13, 14, 15, 17],
+  "Read book": [4, 5, 7, 8, 10, 11, 12, 14, 16, 18],
+  "Post 3 YouTube faceless vid": [5, 7, 9, 12, 15, 17],
+  "Work on Jarvis": [6, 9, 12, 15, 17],
+  "Sideshift UGC": [4, 6, 8, 10, 12, 14, 16, 18],
+  "Skinriari care 2-3 times": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+  "Debloat steps": [8, 12, 16],
+  "Keyboard practice": [10, 15],
+  "Sleep before 10 PM": [5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 17, 18],
+};
 
 function seed(): AppData {
   const habits: Habit[] = INITIAL_HABITS.map((name) => ({
@@ -14,7 +36,7 @@ function seed(): AppData {
     name,
     timeTrackingEnabled: false,
     createdAt: new Date().toISOString(),
-    completions: {},
+    completions: MAY_2026[name] ? { "2026-05": MAY_2026[name] } : ({} as Record<string, number[]>),
   }));
   return {
     habits,
