@@ -1,5 +1,8 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import { CalendarDays, BarChart3, Trophy, Settings, History, ListChecks, Flame } from "lucide-react";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { CalendarDays, BarChart3, Trophy, Settings, History, ListChecks, Flame, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const items = [
   { to: "/", label: "Monthly Grid", icon: CalendarDays },
@@ -44,10 +47,32 @@ export function Sidebar() {
           );
         })}
       </nav>
-      <div className="px-4 py-4 text-[11px] text-[var(--text-tertiary)] border-t border-[var(--border-subtle)]">
-        v1.0 • LocalStorage
-      </div>
+      <UserFooter />
     </aside>
+  );
+}
+
+function UserFooter() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) toast.error(error.message);
+    else navigate({ to: "/auth" });
+  };
+  const label = user?.user_metadata?.display_name || user?.email || "Account";
+  const initial = (label as string).charAt(0).toUpperCase();
+  return (
+    <div className="px-3 py-3 border-t border-[var(--border-subtle)] flex items-center gap-2">
+      <div className="h-8 w-8 rounded-full gradient-primary flex items-center justify-center text-xs text-white font-semibold shrink-0">{initial}</div>
+      <div className="min-w-0 flex-1">
+        <div className="text-xs font-medium truncate">{label}</div>
+        <div className="text-[10px] text-[var(--text-tertiary)] truncate">{user?.email}</div>
+      </div>
+      <button onClick={signOut} className="p-1.5 rounded-md text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]" title="Sign out" aria-label="Sign out">
+        <LogOut className="h-4 w-4" />
+      </button>
+    </div>
   );
 }
 

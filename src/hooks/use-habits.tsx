@@ -1,19 +1,22 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AppData, Habit, ThemeName } from "@/lib/habit-types";
-import { applyTheme, loadData, newHabit, saveData, saveDataNow } from "@/lib/habit-storage";
+import { applyTheme, newHabit } from "@/lib/habit-storage";
 import { checkAchievements, monthKey } from "@/lib/habit-calc";
 import { ACHIEVEMENT_META } from "@/lib/habit-types";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 
 const INITIAL_DATA: AppData = {
   habits: [],
   achievements: [],
   settings: { theme: "obsidian", globalTimeTracking: false, lastVisited: "" },
-  version: "1.0.0",
+  version: "1.1.0",
 };
 
 interface Ctx {
   data: AppData;
+  loading: boolean;
   setTheme: (t: ThemeName) => void;
   toggleCompletion: (habitId: string, mk: string, day: number) => void;
   addHabit: (name: string, timeTracking?: boolean) => void;
@@ -27,27 +30,68 @@ interface Ctx {
 const HabitsCtx = createContext<Ctx | null>(null);
 
 export function HabitsProvider({ children }: { children: React.ReactNode }) {
+  const { user, loading: authLoading } = useAuth();
   const [data, setData] = useState<AppData>(INITIAL_DATA);
-  const [hydrated, setHydrated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hydratedRef = useRef(false);
 
+  // Load data for the signed-in user
   useEffect(() => {
-    // re-hydrate on client to ensure localStorage data loads
-    setData(loadData());
-    setHydrated(true);
-  }, []);
+    if (authLoading) return;
+    if (!user) {
+      setData(INITIAL_DATA);
+      setLoading(false);
+      hydratedRef.current = false;
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    hydratedRef.current = false;
+    (async () => {
+      const { data: row, error } = await supabase
+        .from("user_habit_data")
+        .select("data")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      if (error) {
+        console.error(error);
+        toast.error("Failed to load your habits");
+      }
+      const loaded = (row?.data as AppData | undefined) ?? INITIAL_DATA;
+      setData({ ...INITIAL_DATA, ...loaded, settings: { ...INITIAL_DATA.settings, ...(loaded.settings ?? {}) } });
+      setLoading(false);
+      // mark hydrated on next tick so the initial load doesn't trigger a save
+      setTimeout(() => { hydratedRef.current = true; }, 0);
+    })();
+    return () => { cancelled = true; };
+  }, [user, authLoading]);
 
+  // Apply theme
   useEffect(() => {
-    if (hydrated) applyTheme(data.settings.theme);
-  }, [data.settings.theme, hydrated]);
+    applyTheme(data.settings.theme);
+  }, [data.settings.theme]);
 
+  // Debounced cloud save
   useEffect(() => {
-    if (hydrated) saveData(data);
-  }, [data, hydrated]);
+    if (!user || !hydratedRef.current) return;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      const { error } = await supabase
+        .from("user_habit_data")
+        .upsert({ user_id: user.id, data: data as never }, { onConflict: "user_id" });
+      if (error) {
+        console.error(error);
+        toast.error("Failed to save");
+      }
+    }, 400);
+    return () => { if (saveTimer.current) clearTimeout(saveTimer.current); };
+  }, [data, user]);
 
   const update = useCallback((fn: (d: AppData) => AppData) => {
     setData((prev) => {
       const next = fn(prev);
-      // achievements
       const newOnes = checkAchievements(next.habits, next.achievements);
       if (newOnes.length) {
         newOnes.forEach((a) =>
@@ -64,6 +108,7 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
   const ctx: Ctx = useMemo(
     () => ({
       data,
+      loading,
       setTheme: (t) => update((d) => ({ ...d, settings: { ...d.settings, theme: t } })),
       toggleCompletion: (habitId, mk, day) =>
         update((d) => ({
@@ -87,25 +132,14 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
         update((d) => ({ ...d, habits: d.habits.filter((h) => h.id !== id) }));
         toast.success("Habit deleted", { description: `${name} removed` });
       },
-      importAll: (incoming) => {
-        setData(incoming);
-        saveDataNow(incoming);
-        toast.success("Data imported");
-      },
+      importAll: (incoming) => setData(incoming),
       clearAll: () => {
-        const fresh: AppData = {
-          habits: [],
-          achievements: [],
-          settings: data.settings,
-          version: data.version,
-        };
-        setData(fresh);
-        saveDataNow(fresh);
+        setData((d) => ({ habits: [], achievements: [], settings: d.settings, version: d.version }));
       },
       setGlobalTimeTracking: (v) =>
         update((d) => ({ ...d, settings: { ...d.settings, globalTimeTracking: v } })),
     }),
-    [data, update],
+    [data, loading, update],
   );
 
   return <HabitsCtx.Provider value={ctx}>{children}</HabitsCtx.Provider>;
