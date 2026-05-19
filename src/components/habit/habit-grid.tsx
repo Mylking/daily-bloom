@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { exportCSV, exportJSON, exportPDF } from "@/lib/habit-export";
-import confetti from "canvas-confetti";
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
@@ -45,7 +44,9 @@ export function HabitGrid() {
     const key = `${mk}-${todayDay}`;
     if (allDone && lastCelebrated.current !== key) {
       lastCelebrated.current = key;
-      confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 } });
+      import("canvas-confetti").then(({ default: confetti }) => {
+        confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 } });
+      });
     }
   }, [data.habits, mk, todayDay, isCurrentMonth]);
 
