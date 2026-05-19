@@ -36,7 +36,7 @@ function seed(): AppData {
     name,
     timeTrackingEnabled: false,
     createdAt: new Date().toISOString(),
-    completions: MAY_2026[name] ? { "2026-05": MAY_2026[name] } : {},
+    completions: MAY_2026[name] ? { "2026-05": MAY_2026[name] } : ({} as Record<string, number[]>),
   }));
   return {
     habits,
