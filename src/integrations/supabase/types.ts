@@ -64,7 +64,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      seed_owner_habits: { Args: never; Returns: Json }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
