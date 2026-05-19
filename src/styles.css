@@ -1,4 +1,9 @@
-@import "tailwindcss" source(none);
+/* Hide Lovable badge */
+#lovable-badge {
+  display: none !important;
+}
+
+
 @source "../src";
 @import "tw-animate-css";
 
