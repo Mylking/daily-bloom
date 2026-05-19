@@ -46,10 +46,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Habitus — Professional habit tracker" },
+      { title: "Habitus — Personal Habit tracker" },
       { name: "description", content: "Track daily habits, streaks, and analytics in a sleek dark interface." },
-      { property: "og:title", content: "Habitus — Professional habit tracker" },
-      { name: "twitter:title", content: "Habitus — Professional habit tracker" },
+      { property: "og:title", content: "Habitus — Personal Habit tracker" },
+      { name: "twitter:title", content: "Habitus — Personal Habit tracker" },
       { property: "og:description", content: "Track daily habits, streaks, and analytics in a sleek dark interface." },
       { name: "twitter:description", content: "Track daily habits, streaks, and analytics in a sleek dark interface." },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/c95a69e3-01af-4998-b925-854a3c46db4d" },
