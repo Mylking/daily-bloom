@@ -20,7 +20,7 @@ interface Ctx {
 const HabitsCtx = createContext<Ctx | null>(null);
 
 export function HabitsProvider({ children }: { children: React.ReactNode }) {
-  const [data, setData] = useState<AppData>(() => loadData());
+  const [data, setData] = useState<AppData>(() => initialData());
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
